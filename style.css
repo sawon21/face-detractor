@@ -1,0 +1,67 @@
+
+
+.section {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#my-qr-reader {
+    margin: 20px auto;
+    border: 3px solid #feb47b;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+
+/* Modal specific styling */
+.success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.warning {
+    background-color: #ffc107;
+    color: white;
+    border: none;
+}
+
+.modal-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+#attendance-table {
+    margin-top: 30px;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+}
