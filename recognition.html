@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detective - Recognition</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    #videoRecognition {
+      width: 100vw;
+      height: 60vh;
+      object-fit: cover;
+      z-index: 1;
+    }
+    #recognitionContainer {
+      position: relative;
+      width: 100vw;
+      height: 40vh;
+      background-color: #fff;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    #recognitionResult {
+      color: #000;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    #downloadPdf {
+      margin-top: 20px;
+    }
+    #verifiedIcon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      font-size: 100px;
+      color: green;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Video Stream -->
+  <video id="videoRecognition" autoplay></video>
+
+  <!-- Recognition results and action section -->
+  <div id="recognitionContainer">
+    <div id="recognitionResult"></div>
+    <button id="downloadPdf" class="btn btn-success">Download Attendance PDF</button>
+  </div>
+
+  <!-- Verified Icon -->
+  <div id="verifiedIcon">✔️</div>
+
+  <canvas id="canvasRecognition" style="display:none;"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+  <script>
+    const videoRecognition = document.getElementById('videoRecognition');
+    const canvasRecognition = document.getElementById('canvasRecognition');
+    const contextRecognition = canvasRecognition.getContext('2d');
+    const recognitionResult = document.getElementById('recognitionResult');
+    const downloadPdf = document.getElementById('downloadPdf');
+    const verifiedIcon = document.getElementById('verifiedIcon');
+
+    // Access the user's webcam for recognition
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        videoRecognition.srcObject = stream;
+        setInterval(detectFace, 1000); // Try to recognize a face every second
+      })
+      .catch(err => {
+        console.error("Camera access error: " + err);
+      });
+
+    function detectFace() {
+      canvasRecognition.width = videoRecognition.videoWidth;
+      canvasRecognition.height = videoRecognition.videoHeight;
+      contextRecognition.drawImage(videoRecognition, 0, 0, canvasRecognition.width, canvasRecognition.height);
+      const capturedRecognitionImage = canvasRecognition.toDataURL();
+
+      const students = JSON.parse(localStorage.getItem('students')) || [];
+      let recognizedStudent = null;
+
+      students.forEach(student => {
+        if (student.faceImage === capturedRecognitionImage) {
+          recognizedStudent = student;
+        }
+      });
+
+      if (recognizedStudent) {
+        recognitionResult.innerHTML = `
+          <h4>Student Found</h4>
+          <p><strong>Name:</strong> ${recognizedStudent.name}</p>
+          <p><strong>Roll Number:</strong> ${recognizedStudent.roll}</p>
+          <p><strong>Department:</strong> ${recognizedStudent.department}</p>
+        `;
+        verifiedIcon.style.display = 'block'; // Show the verified icon
+        setTimeout(() => {
+          verifiedIcon.style.display = 'none'; // Hide the verified icon after 2 seconds
+        }, 2000);
+      } else {
+        recognitionResult.innerHTML = '<p>No matching student found.</p>';
+      }
+    }
+
+    // Generate PDF for recognized student
+    downloadPdf.addEventListener('click', function () {
+      const doc = new window.jspdf.jsPDF();
+      doc.text(20, 20, 'Attendance Report');
+      doc.fromHTML(recognitionResult.innerHTML, 20, 30);
+      doc.save('attendance.pdf');
+    });
+  </script>
+</body>
+</html>
