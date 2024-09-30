@@ -1,140 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Attendance System</title>
+// Add table headers
+      doc.setFontSize(12);
+      doc.text('Serial', 14, 20);
+      doc.text('Name', 30, 20);
+      doc.text('Roll', 90, 20);
+      doc.text('Department', 130, 20);
+      doc.text('Time', 180, 20);
+      currentY += 10;
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  
-  <!-- FontAwesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      // Iterate through the rows in the table and add them to the PDF
+      for (let i = 0; i < rows.length; i++) {
+        let cells = rows[i].getElementsByTagName('td');
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        if (currentY > 280) { // Create a new page if content exceeds page height
+          doc.addPage();
+          currentY = 20;
+          pageNumber++;
 
-  <!-- Animate.css for animations -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+          // Add header on new page
+          doc.text('Serial', 14, currentY);
+          doc.text('Name', 30, currentY);
+          doc.text('Roll', 90, currentY);
+          doc.text('Department', 130, currentY);
+          doc.text('Time', 180, currentY);
+          currentY += 10;
+        }
 
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-    }
-    #video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border: 2px solid #007bff;
-      border-radius: 10px;
-    }
-    #scanner-container {
-      height: 50vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #f8f9fa;
-      margin-bottom: 20px;
-    }
-    #result-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      color: #fff;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 999;
-    }
-    #result-screen h1 {
-      font-size: 5rem;
-    }
-    #result-screen p {
-      font-size: 2rem;
-    }
-    .big-verified {
-      font-size: 7rem;
-      color: green;
-    }
-    .big-not-verified {
-      font-size: 7rem;
-      color: red;
-    }
-    .table-wrapper {
-      max-height: 300px;
-      overflow-y: auto;
-      margin-top: 20px;
-    }
-    .download-btn {
-      margin-top: 20px;
-      text-align: right;
-    }
-  </style>
-</head>
-<body>
-  <div class="container mt-5">
-    <h1 class="text-center mb-4">QR Code Attendance System <i class="fas fa-qrcode"></i></h1>
+        doc.text(cells[0].textContent, 14, currentY);     // Serial number
+        doc.text(cells[1].textContent, 30, currentY);     // Name
+        doc.text(cells[2].textContent, 90, currentY);     // Roll
+        doc.text(cells[3].textContent, 130, currentY);    // Department
+        doc.text(cells[4].textContent, 180, currentY);    // Time
 
-    <!-- Scanner Container (50% screen height) -->
-    <div id="scanner-container" class="mb-4">
-      <video id="video"></video>
-    </div>
+        currentY += 10;
+      }
 
-    <!-- Attendance Table -->
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <h3 class="text-center">Attendance List</h3>
-        <div class="table-wrapper table-responsive">
-          <table id="attendanceTable" class="table table-striped table-bordered table-hover">
-            <thead class="thead-dark">
-              <tr>
-                <th>Serial</th>
-                <th>Name</th>
-                <th>Roll</th>
-                <th>Department</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Attendance rows will be dynamically added here -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Download PDF Button -->
-        <div class="download-btn">
-          <button id="downloadBtn" class="btn btn-primary">
-            <i class="fas fa-file-download"></i> Download Attendance PDF
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Full-screen result (hidden by default) -->
-    <div id="result-screen" class="d-flex">
-      <h1 id="result-icon"></h1>
-      <p id="result-message"></p>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS and jQuery -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-  <!-- FontAwesome for icons -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-
-  <!-- Instascan for QR Scanning -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
-
-  <!-- jsPDF for PDF Export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-
-<script src="app.js"> </script>
+      // Save the PDF
+      doc.save("Attendance.pdf");
+    });
+  </script>
 </body>
 </html>
